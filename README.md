@@ -60,7 +60,7 @@ The total runtime is budgeted globally within the notebook limit of 17,400 secon
 | Top-p | 1.0 |  |
 | Top-k | 100 | As suggested in the [gpt-oss run guide](https://unsloth.ai/docs/models/gpt-oss-how-to-run-and-fine-tune#run-gpt-oss-120b) |
 | Temperature | 0.4 to 1.0 | Changed across experiments |
-| Reasoning effort | High | [`Openai Harmony`](https://github.com/openai/harmony.git) library, model-specific |
+| Reasoning effort | High | [Openai Harmony](https://github.com/openai/harmony.git) library, model-specific |
 | Seed | Random |  |
 | Extra flags | `--async-scheduling`<br>`--disable-log-stats`<br>`--enable-prefix-caching`<br>`--enable-chunked-prefill` | vLLM configuration flags |
 
