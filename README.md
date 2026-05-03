@@ -114,7 +114,7 @@ In some experiments, this prompt was slightly adjusted to improve code execution
 
 ## Qwen/Qwen3.5-35B-A3B experiment
 
-To test the same overall approach with a different model family, the solver was reproduced with **[`Qwen/Qwen3.5-35B-A3B`](https://huggingface.co/Qwen/Qwen3.5-35B-A3B)**from Hugging Face.
+To test the same overall approach with a different model family, the solver was reproduced with **[`Qwen/Qwen3.5-35B-A3B`](https://huggingface.co/Qwen/Qwen3.5-35B-A3B)** from Hugging Face.
 
 The code execution component from the official [Qwen-Agent repository](https://github.com/QwenLM/Qwen-Agent) was adapted to run inside a stateful notebook instead of a Docker container.
 
@@ -125,4 +125,4 @@ Although the model showed strong benchmark performance, it was significantly slo
 Some scripts include additional techniques or external references, such as:
 
 - [Less is More: Improving LLM Reasoning with Minimal Test-Time Intervention](https://arxiv.org/abs/2510.13940)
-- [Speculative decoding for `openai/gpt-oss-120b`](https://huggingface.co/nvidia/gpt-oss-120b-Eagle3-long-context)
+- [Speculative decoding for openai/gpt-oss-120b](https://huggingface.co/nvidia/gpt-oss-120b-Eagle3-long-context)
