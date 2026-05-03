@@ -14,20 +14,20 @@ The final result achieved in this project was around the middle of the leaderboa
 
 This repository includes multiple solution variants that share a common solver core:
 
-- **[`aimo-3-gpt-oss-best-v0`](./scripts/aimo-3-gpt-oss-best-v0.py)**: baseline code.
-- **[`aimo-3-gpt-oss-best-v1`](./scripts/aimo-3-gpt-oss-best-v1.py)**: half of the attempts use temperature `0.5`, the remaining half use `1.0`. Both the task prompt and the tool-usage prompt were refined.
-- **[`aimo-3-gpt-oss-best-v2-different-strategies`](./scripts/aimo-3-gpt-oss-best-v2-different-strategies.py)**: each attempt uses a different temperature. In addition, every attempt receives a base prompt enriched with a strategy prompt selected from a curated list. Each strategy follows a specific reasoning pattern such as brute force before proving, proof by contradiction, and similar approaches.
-- **[`aimo-3-gpt-oss-two-phases`](./scripts/aimo-3-gpt-oss-two-phases.py)**: an experiment designed to accelerate solving by splitting the total number of attempts into two phases. The first phase uses a base prompt and stops early if full agreement is reached. If not, the second phase continues with an extended prompt to generate more diverse answers before final voting.
-- **[`aimo-3-gpt-oss-verification`](./scripts/aimo-3-gpt-oss-verification.py)**: a verification stage is run after the parallel attempts. The model is asked to inspect the candidate answers and judge their correctness. This verification is repeated in parallel, and the resulting answers are added to the final vote pool.
-- **[`aimo-3-qwen3-5`](./scripts/aimo-3-qwen3-5.py)**: the same overall setup was reproduced with the Qwen/Qwen3.5-35B-A3B model and the Qwen-Agent stack. The experiment was limited by runtime, as this model proved significantly slower than `gpt-oss-120b`.
+- **[`aimo-3-gpt-oss-best-v0`](./scripts/aimo-3-gpt-oss-best-v0.ipynb)**: baseline code.
+- **[`aimo-3-gpt-oss-best-v1`](./scripts/aimo-3-gpt-oss-best-v1.ipynb)**: half of the attempts use temperature `0.5`, the remaining half use `1.0`. Both the task prompt and the tool-usage prompt were refined.
+- **[`aimo-3-gpt-oss-best-v2-different-strategies`](./scripts/aimo-3-gpt-oss-best-v2-different-strategies.ipynb)**: each attempt uses a different temperature. In addition, every attempt receives a base prompt enriched with a strategy prompt selected from a curated list. Each strategy follows a specific reasoning pattern such as brute force before proving, proof by contradiction, and similar approaches.
+- **[`aimo-3-gpt-oss-two-phases`](./scripts/aimo-3-gpt-oss-two-phases.ipynb)**: an experiment designed to accelerate solving by splitting the total number of attempts into two phases. The first phase uses a base prompt and stops early if full agreement is reached. If not, the second phase continues with an extended prompt to generate more diverse answers before final voting.
+- **[`aimo-3-gpt-oss-verification`](./scripts/aimo-3-gpt-oss-verification.ipynb)**: a verification stage is run after the parallel attempts. The model is asked to inspect the candidate answers and judge their correctness. This verification is repeated in parallel, and the resulting answers are added to the final vote pool.
+- **[`aimo-3-qwen3-5`](./scripts/aimo-3-qwen3-5.ipynb)**: the same overall setup was reproduced with the Qwen/Qwen3.5-35B-A3B model and the Qwen-Agent stack. The experiment was limited by runtime, as this model proved significantly slower than `gpt-oss-120b`.
 
-The best score is achieved by **[`aimo-3-gpt-oss-best-v0`](./scripts/aimo-3-gpt-oss-best-v0.py)**, **[`aimo-3-gpt-oss-best-v1`](./scripts/aimo-3-gpt-oss-best-v1.py)**, **[`aimo-3-gpt-oss-best-v2-different-strategies`](./scripts/aimo-3-gpt-oss-best-v2-different-strategies.py)** notebooks.
+The best score is achieved by **[`aimo-3-gpt-oss-best-v0`](./scripts/aimo-3-gpt-oss-best-v0.ipynb)**, **[`aimo-3-gpt-oss-best-v1`](./scripts/aimo-3-gpt-oss-best-v1.ipynb)**, **[`aimo-3-gpt-oss-best-v2-different-strategies`](./scripts/aimo-3-gpt-oss-best-v2-different-strategies.ipynb)** notebooks.
 
 ## Common solver architecture
 
 The shared solver is built around **[`openai/gpt-oss-120b`](https://huggingface.co/openai/gpt-oss-120b)** on a single H100 through vLLM.
 
-For each problem, the system launches a fixed number of independently seeded attempts in parallel. Each attempt can interact with a stateful Jupyter sandbox through Harmony tool-use messages. Generation is streamed token by token. Whenever a closing brace `}` appears, the last tokens are scanned, and if `\boxed{...}` is detected, the attempt terminates immediately with that answer.
+For each problem, the system launches a fixed number of independently seeded attempts in parallel. Each attempt can interact with a stateful Jupyter sandbox through [`Openai Harmony`](https://github.com/openai/harmony.git) tool-use messages. Generation is streamed token by token. Whenever a closing brace `}` appears, the last tokens are scanned, and if `\boxed{...}` is detected, the attempt terminates immediately with that answer.
 
 Once an attempt produces a final answer, it is pooled with the others. If multiple attempts agree on the same answer, the remaining attempts are cancelled early. Otherwise, the system waits for all attempts to complete and then selects the final response using an entropy-weighted voting strategy.
 
@@ -60,7 +60,7 @@ The total runtime is budgeted globally within the notebook limit of 17,400 secon
 | Top-p | 1.0 |  |
 | Top-k | 100 | As suggested in the [gpt-oss run guide](https://unsloth.ai/docs/models/gpt-oss-how-to-run-and-fine-tune#run-gpt-oss-120b) |
 | Temperature | 0.4 to 1.0 | Changed across experiments |
-| Reasoning effort | High | Harmony library, model-specific |
+| Reasoning effort | High | [`Openai Harmony`](https://github.com/openai/harmony.git) library, model-specific |
 | Seed | Random |  |
 | Extra flags | `--async-scheduling`<br>`--disable-log-stats`<br>`--enable-prefix-caching`<br>`--enable-chunked-prefill` | vLLM configuration flags |
 
@@ -96,7 +96,7 @@ In every case, the prompt includes the final-answer constraint:
 
 ### Strategy prompts
 
-In [`aimo-3-gpt-oss-best-v2-different-strategies`](./scripts/aimo-3-gpt-oss-best-v2-different-strategies.py), each attempt is also enriched with a strategy prompt selected from a predefined list. These prompts encourage different solving styles, such as:
+In [`aimo-3-gpt-oss-best-v2-different-strategies`](./scripts/aimo-3-gpt-oss-best-v2-different-strategies.ipynb), each attempt is also enriched with a strategy prompt selected from a predefined list. These prompts encourage different solving styles, such as:
 
 - brute force before proving;
 - proof by contradiction;
